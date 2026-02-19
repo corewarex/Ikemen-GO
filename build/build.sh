@@ -99,6 +99,7 @@ BUILD_FFMPEG="${BUILD_FFMPEG:-auto}"   # auto|yes|no
 # ---- App metadata (overridden by CI)
 APP_VERSION="${APP_VERSION:-nightly}"
 APP_BUILDTIME="${APP_BUILDTIME:-$(date '+%Y.%m.%d')}"
+APP_GITCOMMIT="${APP_GITCOMMIT:-$(git rev-parse --short HEAD 2>/dev/null || echo '')}"
 
 # On macOS, Homebrew may provide pkgconf instead of pkg-config; use it when pkg-config is not in PATH.
 case "$OSTYPE" in darwin*)
@@ -1097,11 +1098,11 @@ function build() {
 	# Android has slightly different steps.
 	if [[ "$GOOS" == "android" ]]; then
 		go build -buildmode=c-shared -trimpath -v -tags=android,gles2 \
-		-ldflags="-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}' -X 'runtime.godebugDefault=asyncpreemptoff=1,sigaltstack=0'" \
+		-ldflags="-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}' -X 'main.GitCommit=${APP_GITCOMMIT}' -X 'runtime.godebugDefault=asyncpreemptoff=1,sigaltstack=0'" \
 		-o "$OUTDIR/$binName" ./src
 	else
 		go build -trimpath -v \
-		-ldflags "-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}'" \
+		-ldflags "-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}' -X 'main.GitCommit=${APP_GITCOMMIT}'" \
 		-o "$OUTDIR/$binName" ./src
 	fi
 
@@ -1137,12 +1138,12 @@ function buildWin() {
 	if [[ "${DEBUG_BUILD:-}" -eq 1 ]]; then
 		# Console subsystem: keep a terminal for logs/panics while debugging
 		go build -trimpath -v \
-		  -ldflags "-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}'" \
+		  -ldflags "-s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}' -X 'main.GitCommit=${APP_GITCOMMIT}'" \
 		  -o "$OUTDIR/$binName" ./src
 	else
 		# GUI subsystem: hides console window
 		go build -trimpath -v \
-		  -ldflags "-H windowsgui -s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}'" \
+		  -ldflags "-H windowsgui -s -w -X 'main.Version=${APP_VERSION}' -X 'main.BuildTime=${APP_BUILDTIME}' -X 'main.GitCommit=${APP_GITCOMMIT}'" \
 		  -o "$OUTDIR/$binName" ./src
 	fi
 

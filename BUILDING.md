@@ -209,7 +209,7 @@ After a successful run, these will exist in your repo:
 You can override build metadata and wrapper source:
 
 ```bash
-APP_VERSION=my-build APP_BUILDTIME=2026.01.13 \
+APP_VERSION=my-build APP_BUILDTIME=2026.01.13 APP_GITCOMMIT=$(git rev-parse --short HEAD) \
 ANDROID_APK_REPO=https://github.com/Jesuszilla/ikemen-droid.git \
 ANDROID_APK_REF=main \
 docker compose -f build/docker/android/docker-compose.yml run --rm android-build

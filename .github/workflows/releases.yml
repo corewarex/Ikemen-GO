@@ -47,6 +47,7 @@ jobs:
     outputs:
       version: ${{ env.version }}
       buildTime: ${{ env.buildTime }}
+      gitCommit: ${{ env.gitCommit }}
       #previousTag: ${{ steps.previousTag.outputs.tag }}
     steps:
       - uses: actions/checkout@v6
@@ -66,6 +67,7 @@ jobs:
             echo "version=nightly" >> $GITHUB_ENV
           fi
           echo "buildTime=$(date '+%Y.%m.%d')" >> $GITHUB_ENV
+          echo "gitCommit=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
   build:
     name: prepare release
@@ -244,6 +246,7 @@ jobs:
           GOEXPERIMENT: "arenas"
           APP_VERSION: ${{ needs.tag.outputs.version }}
           APP_BUILDTIME: ${{ needs.tag.outputs.buildTime }}
+          APP_GITCOMMIT: ${{ needs.tag.outputs.gitCommit }}
         run: |
           go env -w GO111MODULE=on
           go mod download
@@ -260,6 +263,7 @@ jobs:
           BUILD_ANDROID_APK: ${{ (github.event_name != 'workflow_dispatch' || github.event.inputs.buildAndroidApk != 'false') && '1' || '0' }}
           APP_VERSION: ${{ needs.tag.outputs.version }}
           APP_BUILDTIME: ${{ needs.tag.outputs.buildTime }}
+          APP_GITCOMMIT: ${{ needs.tag.outputs.gitCommit }}
         run: |
           set -euo pipefail
           echo "==> Docker sanity:"
@@ -286,6 +290,7 @@ jobs:
           GOEXPERIMENT: "arenas"
           APP_VERSION: ${{ needs.tag.outputs.version }}
           APP_BUILDTIME: ${{ needs.tag.outputs.buildTime }}
+          APP_GITCOMMIT: ${{ needs.tag.outputs.gitCommit }}
         run: |
           go env -w GO111MODULE=on
           go mod download

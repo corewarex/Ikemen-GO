@@ -16,7 +16,8 @@ import (
 )
 
 var Version = "development"
-var BuildTime = "" // Set automatically by GitHub Actions
+var BuildTime = ""   // Set automatically by GitHub Actions
+var GitCommit = ""   // Set automatically by build script (git rev-parse --short HEAD)
 
 func init() {
 	if runtime.GOOS != "android" {
@@ -256,10 +257,23 @@ func processCommandLine() {
 			} else if r2.MatchString(a) { // 'a' is a flag (starts with '-')
 				flagsEncountered = true // A flag has been encountered
 
+				// If printing version
+				if a == "--version" || a == "-v" {
+					fmt.Printf("I.K.E.M.E.N %s", Version)
+					if BuildTime != "" {
+						fmt.Printf(" (built %s)", BuildTime)
+					}
+					if GitCommit != "" {
+						fmt.Printf(" %s", GitCommit)
+					}
+					fmt.Println()
+					os.Exit(0)
+				}
 				// If getting help about command line options
 				if r1.MatchString(a) {
 					text := `Options (case sensitive):
 -h -?                   Help
+--version -v            Print version and exit
 -log <logfile>          Records match data to <logfile>
 -r <path>               Loads motif <path>. eg. -r motifdir or -r motifdir/system.def
 -lifebar <path>         Loads lifebar <path>. eg. -lifebar data/fight.def
@@ -354,6 +368,9 @@ func handlePanic(r interface{}) {
 
 	// Prepare message metadata
 	version := fmt.Sprintf("Version: %s", Version)
+	if GitCommit != "" {
+		version += fmt.Sprintf(" (%s)", GitCommit)
+	}
 	buildTime := fmt.Sprintf("Build Time: %s", BuildTime)
 	platform := fmt.Sprintf("Platform: %s (%s)", runtime.GOOS, runtime.GOARCH)
 	render := gfx.GetName()
