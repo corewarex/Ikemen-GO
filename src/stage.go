@@ -1983,6 +1983,54 @@ func (s *Stage) action() {
 			}
 		}
 	}
+
+	// Per-frame pos_update and state_change for agent-cli training (1v1 main chars only)
+	if sys.battleEventsEnabled && canStep && sys.roundState() == 2 {
+		for i := 0; i < 2 && i < len(sys.chars); i++ {
+			if len(sys.chars[i]) == 0 || sys.chars[i][0] == nil {
+				continue
+			}
+			c := sys.chars[i][0]
+			if c.helperIndex != 0 || c.csf(CSF_destroy) {
+				continue
+			}
+			charID := i // 0 = P1, 1 = P2 for agent-cli
+			// pos_update
+			posEvt := struct {
+				Type   string  `json:"type"`
+				CharID int     `json:"char_id"`
+				X      float64 `json:"x"`
+				Y      float64 `json:"y"`
+			}{
+				Type:   "pos_update",
+				CharID: charID,
+				X:      float64(c.pos[0]),
+				Y:      float64(c.pos[1]),
+			}
+			if jsonBytes, err := json.Marshal(posEvt); err == nil {
+				select {
+				case BattleEventChan <- string(jsonBytes):
+				default:
+				}
+			}
+			// state_change
+			stateEvt := struct {
+				Type     string `json:"type"`
+				CharID   int    `json:"char_id"`
+				StateNo  int    `json:"state_no"`
+			}{
+				Type:     "state_change",
+				CharID:   charID,
+				StateNo:  int(c.ss.no),
+			}
+			if jsonBytes, err := json.Marshal(stateEvt); err == nil {
+				select {
+				case BattleEventChan <- string(jsonBytes):
+				default:
+				}
+			}
+		}
+	}
 }
 
 // Currently this function only exists so that the stage update sequence is similar to others. In the future it could run more tasks
