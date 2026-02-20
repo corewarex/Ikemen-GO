@@ -78,7 +78,7 @@ build/delaylib/
 build/winres/
 
 # macOS bundle by local make
-/I.K.E.M.E.N-Go.app/
+/Arena-WRX.app/
 
 # Compilation files
 *.syso

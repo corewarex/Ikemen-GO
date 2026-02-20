@@ -188,7 +188,7 @@ options.t_itemname = {
 			--modifyGameOption('Config.BackgroundLoading', false) --TODO: not implemented
 			--modifyGameOption('Config.FirstRun', false)
 			--modifyGameOption('Config.WindowTitle', "Ikemen GO")
-			--modifyGameOption('Config.WindowIcon', {"external/icons/IkemenCylia_256.png", "external/icons/IkemenCylia_96.png", "external/icons/IkemenCylia_48.png"})
+			--modifyGameOption('Config.WindowIcon', {"external/icons/dreamcast-256.png", "external/icons/dreamcast-96.png", "external/icons/dreamcast-48.png"})
 			--modifyGameOption('Config.System', "external/script/main.lua")
 			--modifyGameOption('Config.ScreenshotFolder', "")
 			--modifyGameOption('Config.TrainingChar', "")

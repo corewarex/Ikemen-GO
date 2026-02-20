@@ -17,7 +17,7 @@ help:
 	@echo ""
 	@echo "Other targets:"
 	@echo "  appbundle          - Create MacOS .app bundle (BINNAME=bin/...)"
-	@echo "  clean_appbundle    - Remove I.K.E.M.E.N-Go.app"
+	@echo "  clean_appbundle    - Remove Arena-WRX.app"
 	@echo "  android-apk        - Build Android APK"
 	@echo ""
 	@echo "Examples: make Ikemen_GO_Linux   make Ikemen_GO_MacOSARM   make help"
@@ -109,25 +109,21 @@ Ikemen_GO_MacOSARM: ${srcFiles}
 
 # MacOS app bundle
 appbundle:
-	mkdir -p I.K.E.M.E.N-Go.app
-	mkdir -p I.K.E.M.E.N-Go.app/Contents
-	mkdir -p I.K.E.M.E.N-Go.app/Contents/MacOS
-	mkdir -p I.K.E.M.E.N-Go.app/Contents/Resources
+	mkdir -p Arena-WRX.app
+	mkdir -p Arena-WRX.app/Contents
+	mkdir -p Arena-WRX.app/Contents/MacOS
+	mkdir -p Arena-WRX.app/Contents/Resources
 	# BINNAME can be a full path (e.g. bin/Ikemen_GO_MacOS) or just the filename.
-	cp $(BINNAME) I.K.E.M.E.N-Go.app/Contents/MacOS/$(notdir $(BINNAME))
-	cp ./build/Info.plist I.K.E.M.E.N-Go.app/Contents/Info.plist
-	cp ./build/bundle_run.sh I.K.E.M.E.N-Go.app/Contents/MacOS/bundle_run.sh
-	chmod +x I.K.E.M.E.N-Go.app/Contents/MacOS/bundle_run.sh
-	chmod +x I.K.E.M.E.N-Go.app/Contents/MacOS/$(notdir $(BINNAME))
-	mkdir -p build/icontmp/icon.iconset
-	cp external/icons/IkemenCylia_256.png build/icontmp/icon.iconset/icon_256x256.png
-	iconutil -c icns build/icontmp/icon.iconset -o build/icontmp/icon.icns
-	cp build/icontmp/icon.icns I.K.E.M.E.N-Go.app/Contents/Resources/icon.icns
-	rm -rf build/icontmp
+	cp $(BINNAME) Arena-WRX.app/Contents/MacOS/$(notdir $(BINNAME))
+	cp ./build/Info.plist Arena-WRX.app/Contents/Info.plist
+	cp ./build/bundle_run.sh Arena-WRX.app/Contents/MacOS/bundle_run.sh
+	chmod +x Arena-WRX.app/Contents/MacOS/bundle_run.sh
+	chmod +x Arena-WRX.app/Contents/MacOS/$(notdir $(BINNAME))
+	cp external/icons/macos-set/dreamcast.icns Arena-WRX.app/Contents/Resources/icon.icns
 
 .PHONY: help android-apk
 android-apk:
 	bash ./build/build_android.sh
 
 clean_appbundle:
-	rm -rf I.K.E.M.E.N-Go.app
+	rm -rf Arena-WRX.app

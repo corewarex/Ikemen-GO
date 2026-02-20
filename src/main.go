@@ -120,6 +120,19 @@ func realMain() {
 		sys.baseDir = "./"
 	}
 
+	processCommandLine()
+
+	// Apply --workspace if specified (desktop only; Android baseDir is set from Java)
+	if runtime.GOOS != "android" {
+		if workspace, ok := sys.cmdFlags["--workspace"]; ok && workspace != "" && workspace != "true" {
+			sys.baseDir = workspace
+			if err := os.Chdir(sys.baseDir); err != nil {
+				ShowErrorDialog("Failed to change to workspace: " + err.Error())
+				panic(err)
+			}
+		}
+	}
+
 	// Handle Permissions and Directory Creation
 	permission := os.FileMode(0755)
 	if runtime.GOOS != "android" {
@@ -129,8 +142,6 @@ func realMain() {
 	// Create directories for ALL platforms
 	os.MkdirAll(filepath.Join(sys.baseDir, "save/replays"), permission)
 	os.MkdirAll(filepath.Join(sys.baseDir, "save/logs"), permission)
-
-	processCommandLine()
 
 	// Ensure cmdFlags exists even when there are no CLI args,
 	// since we assign defaults below.
@@ -275,6 +286,7 @@ func processCommandLine() {
 -h -?                   Help
 --version -v            Print version and exit
 -log <logfile>          Records match data to <logfile>
+--workspace <path>      Sets game data root directory (default: ./)
 -r <path>               Loads motif <path>. eg. -r motifdir or -r motifdir/system.def
 -lifebar <path>         Loads lifebar <path>. eg. -lifebar data/fight.def
 -storyboard <path>      Loads storyboard <path>. eg. -storyboard chars/kfm/intro.def

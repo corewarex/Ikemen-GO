@@ -1219,7 +1219,7 @@ APP_COPYRIGHT="${APP_COPYRIGHT:-(c) ${COPY_START_YEAR}-${BUILD_YEAR} Ikemen GO t
 	cat > build/winres/Ikemen_GO.rc <<EOF
 #include <windows.h>
 #include <winver.h>
-1 ICON "Ikemen_Cylia_V2.ico"
+1 ICON "windows-set/dreamcast.ico"
 1 RT_MANIFEST "Ikemen_GO.exe.manifest"
 
 VS_VERSION_INFO VERSIONINFO

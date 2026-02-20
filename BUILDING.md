@@ -149,7 +149,7 @@ make Ikemen_GO_MacOS
 
 ```bash
 make appbundle BINNAME=bin/Ikemen_GO_MacOSARM   # or BINNAME=bin/Ikemen_GO_MacOS
-open I.K.E.M.E.N-Go.app
+open Arena-WRX.app
 ```
 
 You can also double-click **`build/Ikemen_GO.command`**; it starts the bundle or the binary.
