@@ -1,9 +1,21 @@
 {
   "images": [
     {
+      "size": "32x32",
+      "idiom": "universal",
+      "filename": "dreamcast-32.png",
+      "scale": "1x"
+    },
+    {
       "size": "48x48",
       "idiom": "universal",
       "filename": "dreamcast-48.png",
+      "scale": "1x"
+    },
+    {
+      "size": "64x64",
+      "idiom": "universal",
+      "filename": "dreamcast-64.png",
       "scale": "1x"
     },
     {
@@ -13,9 +25,21 @@
       "scale": "1x"
     },
     {
+      "size": "128x128",
+      "idiom": "universal",
+      "filename": "dreamcast-128.png",
+      "scale": "1x"
+    },
+    {
       "size": "256x256",
       "idiom": "universal",
       "filename": "dreamcast-256.png",
+      "scale": "1x"
+    },
+    {
+      "size": "512x512",
+      "idiom": "universal",
+      "filename": "dreamcast-512.png",
       "scale": "1x"
     }
   ],
