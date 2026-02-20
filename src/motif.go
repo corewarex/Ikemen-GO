@@ -373,15 +373,16 @@ type TimerProperties struct {
 	Displaytime    int32 `ini:"displaytime"`
 }
 
-type PlayerCursorDoneProperties struct {
+type PlayerCursorStateProperties struct {
 	AnimationProperties
 	Snd [2]int32 `ini:"snd" default:"-1,0"`
 }
 
 type PlayerCursorProperties struct {
-	StartCell [2]int32                               `ini:"startcell"`
-	Active    map[string]*AnimationProperties        `ini:"active"`
-	Done      map[string]*PlayerCursorDoneProperties `ini:"done"`
+	StartCell [2]int32                                `ini:"startcell"`
+	Active    map[string]*AnimationProperties         `ini:"active"`
+	Done      map[string]*PlayerCursorStateProperties `ini:"done"`
+	Preview   map[string]*PlayerCursorStateProperties `ini:"preview"`
 	Move      struct {
 		Snd [2]int32 `ini:"snd" default:"-1,0"`
 	} `ini:"move"`
@@ -3310,15 +3311,28 @@ func (me *MotifMenu) init(m *Motif) {
 		me.initialized = true
 		return
 	}
+	openPressed := sys.esc || sys.button(pm.Menu.Cancel.Key, -1)
+	// Don't run during challenger / post-match screens.
+	if m.ch.active || sys.postMatchFlg {
+		return
+	}
+	if sys.escExit() || (sys.netplay() && openPressed) {
+		if sys.netplay() {
+			sys.esc = true
+		}
+		sys.endMatch = true
+		return
+	}
+	// If nothing requested opening, do nothing.
+	if !openPressed {
+		return
+	}
 	// Don't allow the menu to instantly re-open if the open/cancel key is still held after closing.
 	if me.reopenLock {
 		if me.menuOpenInputHeld(m) {
 			return
 		}
 		me.reopenLock = false
-	}
-	if (!sys.esc && !sys.button(pm.Menu.Cancel.Key, -1)) || m.ch.active || sys.postMatchFlg {
-		return
 	}
 	if !sys.skipMotifScaling() {
 		sys.setGameSize(sys.scrrect[2], sys.scrrect[3])
@@ -3538,7 +3552,7 @@ func (co *MotifContinue) updateCreditsText(m *Motif) {
 }
 
 func (co *MotifContinue) init(m *Motif) {
-	if (!m.ContinueScreen.Enabled || !co.enabled || sys.cfg.Options.QuickContinue) ||
+	if (!m.ContinueScreen.Enabled || !co.enabled) ||
 		(sys.winnerTeam() != 0 && sys.winnerTeam() != int32(sys.home)+1) ||
 		!sys.sel.gameParams.Continue {
 		co.initialized = true

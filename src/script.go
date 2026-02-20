@@ -2344,6 +2344,9 @@ func systemScriptInit(l *lua.LState) {
 									removeSFFCache(s.filename)
 								}
 							}
+							if sys.reloadPreserveVars[i] {
+								sys.saveCharVars(i)
+							}
 							sys.chars[i] = []*Char{}
 							b = false
 						}
@@ -2430,7 +2433,11 @@ func systemScriptInit(l *lua.LState) {
 				//sys.scoreRounds = [][2]float32{}
 				sys.timerCount = []int32{}
 				sys.sel.cdefOverwrite = make(map[int]string)
+				sys.sel.palOverwrite = make(map[int]int)
 				sys.sel.sdefOverwrite = ""
+				for i := range sys.reloadPreserveVars {
+					sys.reloadPreserveVars[i] = false
+				}
 				if sys.playBgmFlg {
 					sys.bgm.Stop()
 					sys.playBgmFlg = false
@@ -8103,6 +8110,8 @@ func triggerFunctions(l *lua.LState) {
 			l.Push(lua.LBool(sys.debugWC.asf(ASF_runlast)))
 		case "sizepushonly":
 			l.Push(lua.LBool(sys.debugWC.asf(ASF_sizepushonly)))
+		case "nodestroyself":
+			l.Push(lua.LBool(sys.debugWC.asf(ASF_nodestroyself)))
 		// GlobalSpecialFlag (Mugen)
 		case "globalnoko":
 			l.Push(lua.LBool(sys.gsf(GSF_globalnoko)))

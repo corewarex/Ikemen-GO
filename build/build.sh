@@ -577,6 +577,12 @@ function ensure_pkg_config_path() {
 }
 
 function build_ffmpeg() {
+	# check $FFMPEG_SRCDIR first so we don't build if sources are already there (e.g. from a previous build or manual clone)
+	if [[ -d "$FFMPEG_SRCDIR" ]]; then
+		echo "==> FFmpeg sources already exist in $FFMPEG_SRCDIR, skipping clone and build (delete that directory to force rebuild)"
+		ensure_pkg_config_path
+		return 0
+	fi
 	if ! command -v nasm >/dev/null 2>&1; then
 		echo "ERROR: Building FFmpeg requires nasm. Install with: brew install nasm" >&2
 		exit 1
@@ -668,8 +674,14 @@ function build_ffmpeg() {
 }
 
 function build_libxmp_android() {
-	echo "==> Building LibXMP for Android..."
+	# check $BUILDDIR/libxmp-src first so we don't build if sources are already there (e.g. from a previous build or manual clone)
 	local src="$BUILDDIR/libxmp-src"
+	if [[ -d "$src" ]]; then
+		echo "==> LibXMP sources already exist in $src, skipping clone and build (delete that directory to force rebuild)"
+		ensure_pkg_config_path
+		return 0
+	fi
+	echo "==> Building LibXMP for Android..."
 	[[ -d "$src" ]] || git clone https://github.com/libxmp/libxmp.git "$src"
 	
 	mkdir -p "$src/build-android"
@@ -695,6 +707,13 @@ function build_libxmp_android() {
 }
 
 function build_sdl2_android() {
+	# check $BUILDDIR/sdl2-src first so we don't build if sources are already there (e.g. from a previous build or manual clone)
+	local src="$BUILDDIR/sdl2-src"
+	if [[ -d "$src/build-android" ]]; then
+		echo "==> SDL2 Android build already exists in $src/build-android, skipping clone and build (delete that directory to force rebuild)"
+		ensure_pkg_config_path
+		return 0
+	fi
 	echo "==> Building SDL2 for Android..."
 	local src="$BUILDDIR/sdl2-src"
 	[[ -d "$src" ]] || git clone https://github.com/libsdl-org/SDL.git "$src"
@@ -1041,6 +1060,11 @@ function maybe_build_ffmpeg() {
 # Generate delay-load import libraries for MinGW (Windows)
 function create_delay_import_libs_windows() {
 	[[ "$GOOS" != "windows" ]] && return 0
+	#check $DELAYLIB_DIR first so we don't regenerate if already done (e.g. from a previous build)
+	if compgen -G "$DELAYLIB_DIR/*.dll.a" > /dev/null 2>/dev/null; then
+		echo "==> Delay-load import libs already exist in $DELAYLIB_DIR, skipping generation (delete that directory to force regeneration)"
+		return 0
+	fi
 	mkdir -p "$DELAYLIB_DIR"
 	shopt -s nullglob
 	local d base name libname
@@ -1274,6 +1298,11 @@ EOF
 # Copy FFmpeg shared libs next to produced binary for easy runtime
 function bundle_shared_libs() {
 	local dest_lib="$LIBDIR"
+	#check dest_lib first so we don't re-copy if already done (e.g. from a previous build)
+	if compgen -G "$dest_lib/*" > /dev/null 2>/dev/null; then
+		echo "==> Shared libs already bundled in $dest_lib, skipping copy (delete that directory to force re-copy)"
+		return 0
+	fi
 	mkdir -p "$dest_lib"
 	if [[ -d "$FFMPEG_PREFIX/bin" ]]; then
 		# Windows
